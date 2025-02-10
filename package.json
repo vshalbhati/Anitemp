@@ -13,6 +13,7 @@
     "@ffmpeg/ffmpeg": "^0.12.15",
     "@ffmpeg/util": "^0.12.2",
     "@remotion/player": "^4.0.260",
+    "@sanity/client": "^6.27.2",
     "@xzdarcy/react-timeline-editor": "^0.1.9",
     "autoprefixer": "^10.4.20",
     "ffmpeg.js": "^4.2.9003",

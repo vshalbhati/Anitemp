@@ -19,3 +19,12 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+.playhead {
+  pointer-events: none;
+  will-change: transform;
+}
+
+.playhead-handle {
+  cursor: pointer;
+  pointer-events: auto;
+}

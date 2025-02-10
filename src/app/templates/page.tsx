@@ -5,6 +5,7 @@ import { Play, Clock, Download, Filter, Search, X, Edit, Save } from 'lucide-rea
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
+import {client} from '@/lib/sanity'
 
 const overlayVariants = {
   hidden: { opacity: 0 },
@@ -18,18 +19,74 @@ const modalVariants = {
   exit: { opacity: 0, y: 50, scale: 0.95 }
 };
 
+interface Template {
+  _id: string;
+  title: string;
+  category: string;
+  duration: string;
+  downloads: number;
+  new: boolean;
+  tags: string[];
+  texts: string[];
+  transitions: string[],
+  preview:{
+      asset: {
+        _ref: string;
+        url: string;
+      }
+  },
+  videos: {
+    videoFile: {
+      asset: {
+        _ref: string;
+        url: string;
+      }
+    }
+  }[];
+}
+
 const TemplatesPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [isVisible, setIsVisible] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [templates, setTemplates] = useState<Template[]>([]);
 
   useEffect(() => {
     setIsVisible(true);
+    fetchTemplates();
   }, []);
 
-  const openPreview = (template) => {
+  const fetchTemplates = async () => {
+    const data = await client.fetch<Template[]>(`*[_type == "template"]{
+      _id,
+      title,
+      category,
+      duration,
+      downloads,
+      new,
+      preview{
+        asset->{
+          _ref,
+          url
+        }
+      },
+      texts[],
+      transitions[],
+      tags,
+      videos[] {
+        videoFile {
+          asset-> {
+            _ref,
+            url
+          }
+        }
+      }
+    }`)
+    setTemplates(data)
+  }
+  const openPreview = (template: Template) => {
     setSelectedTemplate(template);
     setIsModalOpen(true);
   };
@@ -45,63 +102,6 @@ const TemplatesPage = () => {
     { id: 'reels', name: 'Reels & TikTok' },
     { id: 'posts', name: 'Social Posts' },
     { id: 'ads', name: 'Video Ads' }
-  ];
-
-  const templates = [
-    {
-      id: 1,
-      title: "Dynamic Story Slideshow",
-      category: "stories",
-      duration: "15s",
-      downloads: 2300,
-      new: true,
-      tags: ["trending", "business"]
-    },
-    {
-      id: 2,
-      title: "Product Showcase Reel",
-      category: "reels",
-      duration: "30s",
-      downloads: 1800,
-      new: false,
-      tags: ["product", "ecommerce"]
-    },
-    {
-      id: 3,
-      title: "Fashion Collection Story",
-      category: "stories",
-      duration: "20s",
-      downloads: 3100,
-      new: true,
-      tags: ["fashion", "lifestyle"]
-    },
-    {
-      id: 4,
-      title: "Social Media Promo",
-      category: "ads",
-      duration: "15s",
-      downloads: 2700,
-      new: false,
-      tags: ["marketing", "business"]
-    },
-    {
-      id: 5,
-      title: "Food Recipe Showcase",
-      category: "posts",
-      duration: "45s",
-      downloads: 1500,
-      new: true,
-      tags: ["food", "lifestyle"]
-    },
-    {
-      id: 6,
-      title: "Travel Adventure Reel",
-      category: "reels",
-      duration: "60s",
-      downloads: 2100,
-      new: false,
-      tags: ["travel", "lifestyle"]
-    }
   ];
 
   const filteredTemplates = templates.filter(template => {
@@ -165,9 +165,9 @@ const TemplatesPage = () => {
 
       <div className="max-w-7xl mx-auto px-4 mt-12">
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredTemplates.map((template, index) => (
+          {filteredTemplates.map((template: Template, index) => (
             <div
-              key={template.id}
+              key={template._id}
               className={`group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all transform ${
                 isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
               }`}
@@ -255,14 +255,17 @@ const TemplatesPage = () => {
                   loop
                   className="w-full h-full object-cover"
                 >
-                  <source src="/preview-video.mp4" type="video/mp4" />
+                  <source src={selectedTemplate?.preview?.asset?.url} type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
               </div>
 
               <div className="p-6 flex flex-col sm:flex-row gap-4 justify-end">
                 <Link
-                  href="/studio"
+                  href={{
+                    pathname: `/studio`,
+                    query: { data: JSON.stringify(selectedTemplate) }
+                  }}
                   className="px-6 py-3 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition-colors flex items-center gap-2 justify-center"
                 >
                   <Edit className="w-5 h-5" />
