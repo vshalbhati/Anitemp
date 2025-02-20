@@ -37,14 +37,14 @@ const HomePage = () => {
   return (
     <div className="min-h-screen">
        <div style={{ width: '100%', height: '1200px', position: 'relative' }}>
-        {/* <GridDistortion
+        <GridDistortion
           imageSrc="https://picsum.photos/1920/1080?grayscale"
           grid={10}
           mouse={0.1}
           strength={0.15}
           relaxation={0.9}
           className="custom-class"
-        /> */}
+        />
         <h1 className='text-9xl absolute font-extrabold text-center 
                       top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
                       mix-blend-difference text-white z-10 '>
