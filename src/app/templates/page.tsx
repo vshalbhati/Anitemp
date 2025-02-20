@@ -27,7 +27,15 @@ interface Template {
   downloads: number;
   new: boolean;
   tags: string[];
-  texts: string[];
+  texts: {
+    duration:number;
+    position:{
+      x:number;
+      y:number;
+    },
+    content:string;
+    startsat:number;
+  };
   transitions: string[],
   preview:{
       asset: {
@@ -63,6 +71,14 @@ const TemplatesPage = () => {
       _id,
       title,
       category,
+      texts{
+        duration,
+        position{
+          x,y
+        },
+        content,
+        startsat
+      }[],
       duration,
       downloads,
       new,
@@ -72,9 +88,8 @@ const TemplatesPage = () => {
           url
         }
       },
-      texts[],
-      transitions[],
       tags,
+      transitions[],
       videos[] {
         videoFile {
           asset-> {

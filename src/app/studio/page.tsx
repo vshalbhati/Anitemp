@@ -14,6 +14,16 @@ interface Template {
   downloads: number;
   new: boolean;
   tags: string[];
+  texts: {
+    duration:number;
+    position:{
+      x:number;
+      y:number;
+    },
+    content:string;
+    startsat:number;
+  };
+  transitions: string[],
   preview:{
       asset: {
         _ref: string;
@@ -97,12 +107,6 @@ const Studio = () => {
       if (previewUrl) URL.revokeObjectURL(previewUrl);
     };
   }, [segments, previewUrl]);
-  
-  useEffect(() => {
-    if (selectedSegment) {
-      setPreviewUrl(selectedSegment.previewUrl || selectedSegment.video);
-    }
-  }, [selectedSegment]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -383,13 +387,14 @@ const Studio = () => {
                         className="w-full p-3 border rounded-lg min-h-[100px] focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                         placeholder="Enter text overlay..."
                       />
+                      {/* <p>text starts at: {selectedSegment.text.startsat}</p> */}
                     </div>
                   )}
 
                   {activeTab === 'transition' && (
                     <div className="space-y-4">
                       <div className="grid grid-cols-2 gap-2">
-                        {['fade', 'dissolve', 'slide', 'wipe'].map((trans) => (
+                        {['fade', 'dissolve', 'slide', 'wipeleft','wiperight','slideleft','slideright','zoomin','zoomout','circlecrop','circleopen','fadeblack','fadewhite'].map((trans) => (
                           <button
                             key={trans}
                             onClick={() => handleTransitionChange(selectedSegment.id, trans)}
@@ -532,7 +537,7 @@ const Studio = () => {
                     onClick={() => setSelectedSegment(segment)}
                     className={`flex-1 h-12 rounded-lg overflow-hidden cursor-pointer border-2 transition-all ${
                       selectedSegment?.id === segment.id 
-                        ? 'border-purple-600 shadow-lg transform scale-105' 
+                        ? 'border-purple-600 shadow-lg' 
                         : 'border-purple-200 hover:border-purple-400'
                     }`}
                   >

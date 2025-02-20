@@ -94,7 +94,12 @@ export default defineType({
             },
             {
               name:'duration',
-              title: 'Duration (seconds)',
+              title: 'For what Duration (seconds)',
+              type: 'number'
+            },
+            {
+              name:'startsat',
+              title: 'Starts at what Duration (seconds)',
               type: 'number'
             }
           ]
